@@ -1,0 +1,1 @@
+[{"first_name": "Tom", "last_name": "Cat", "email": "tom@cat.com", "username": "cat", "is_staff": "True", "password": "0000"}, {"first_name": "Jerry", "last_name": "Mouse", "email": "jerry@mouse.com", "username": "mouse", "password": "0000"}, {"first_name": "Spike", "last_name": "Dog", "email": "spike@dog.com", "username": "dog", "is_active": "False", "password": "0000"}]

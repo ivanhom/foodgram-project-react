@@ -130,3 +130,6 @@ dmypy.json
 
 # .idea
 .idea
+
+collected_static/
+#media/
