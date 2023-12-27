@@ -26,33 +26,6 @@ class IsUserOrAdminOrJustReadingUserdata(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         is_authenticated = request.user and request.user.is_authenticated
         return (request.method in permissions.SAFE_METHODS
-                or obj.username == request.user
+                or obj.username == str(request.user)
                 or (is_authenticated and request.user.is_admin)
                 )
-
-
-class IsAdminOrReadOnly(permissions.BasePermission):
-    """Разрешает доступ к запросам только администратору
-    или суперпользователю. В противном случае доступ только для чтения.
-    """
-
-    def has_permission(self, request, view):
-        is_authenticated = request.user and request.user.is_authenticated
-        return (request.method in permissions.SAFE_METHODS
-                or (is_authenticated and request.user.is_admin)
-                )
-
-    def has_object_permission(self, request, view, obj):
-        is_authenticated = request.user and request.user.is_authenticated
-        return (request.method in permissions.SAFE_METHODS
-                or (is_authenticated and request.user.is_admin)
-                )
-
-
-class IsSuperUserOrAdmin(permissions.BasePermission):
-    """Разрешает доступ к запросам только администратору
-    или суперпользователю.
-    """
-
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_admin

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from users.models import MyUser, Subscription  # isort:skip
+from users.models import MyUser, Subscription
 
 
 class MyUserAdmin(UserAdmin):

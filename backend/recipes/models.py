@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
-from django.db.models.functions import Lower
 
 User = get_user_model()
 
@@ -47,11 +46,11 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        ordering = (Lower('name'),)
+        ordering = ('name'),
         constraints = (
             models.UniqueConstraint(
                 fields=('name', 'measurement_unit'),
-                name='unique_name_measurement_unit'
+                name='not_unique_name_measurement_unit'
             ),
         )
 
@@ -108,12 +107,12 @@ class RecipeIngredient(models.Model):
     """
     recipe = models.ForeignKey(
         Recipe, verbose_name='Рецепт',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='recipe_ingredient'
     )
     ingredient = models.ForeignKey(
         Ingredient, verbose_name='Ингредиент',
-        on_delete=models.CASCADE,
-        related_name='res'
+        on_delete=models.CASCADE
     )
 
     amount = models.PositiveSmallIntegerField(
@@ -131,7 +130,7 @@ class RecipeIngredient(models.Model):
         constraints = (
             models.UniqueConstraint(
                 fields=('recipe', 'ingredient'),
-                name='unique_recipe_ingredient'
+                name='not_unique_recipe_ingredient'
             ),
         )
 
@@ -162,7 +161,7 @@ class FavoriteRecipe(models.Model):
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
-                name='unique_user_recipe_favorite'
+                name='not_unique_user_recipe_favorite'
             ),
         )
 
@@ -190,7 +189,7 @@ class ShoppingCart(models.Model):
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
-                name='unique_user_recipe_shopping_cart'
+                name='not_unique_user_recipe_shopping_cart'
             ),
         )
 

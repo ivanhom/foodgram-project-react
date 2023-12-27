@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
-from rest_framework.exceptions import ValidationError
+from django.forms import ValidationError
 
 
 class MyUser(AbstractUser):
@@ -63,14 +63,19 @@ class Subscription(models.Model):
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'subscribed'),
-                name='unique_user_subscribed'
+                name='not_unique_user_subscribed'
             ),
         )
 
-    def save(self, **kwargs):
+    def clean(self):
         if self.user == self.subscribed:
-            raise ValidationError('Нельзя подписаться на самого себя!')
-        super().save()
+            raise ValidationError(
+                'Нельзя подписаться на самого себя!'
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.user} подписан на {self.subscribed}'

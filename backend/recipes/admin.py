@@ -1,9 +1,7 @@
 from django import forms
 from django.contrib import admin
-from import_export import resources
-from import_export.admin import ImportExportModelAdmin
 
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe,  # isort:skip
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Tag)
 
 
@@ -64,48 +62,24 @@ class RecipeAdmin(admin.ModelAdmin):
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'ingredient', 'amount', 'recipe')
     search_fields = ('recipe', 'ingredient')
+    list_filter = ('recipe',)
     list_display_links = ('ingredient',)
 
 
 class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user', 'recipe')
-    list_filter = ('user',)
+    list_filter = ('user', 'recipe')
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user', 'recipe')
-    list_filter = ('user',)
-
-
-
-
-# класс обработки данных
-class BookResource(resources.ModelResource):
-    list_display = ('id', 'name', 'measurement_unit')
-    search_fields = ('name', 'measurement_unit')
-    list_filter = ('name',)
-    list_display_links = ('name',)
-
-    class Meta:
-        model = Ingredient
-        fields = ('name', 'measurement_unit')
-
-# вывод данных на странице
-class BookAdmin(ImportExportModelAdmin):
-    resource_classes = [BookResource]
-    fields = ('name', 'measurement_unit')
-    list_display = ('id', 'name', 'measurement_unit')
-    search_fields = ('name', 'measurement_unit')
-    list_filter = ('name',)
-    list_display_links = ('name',)
-
-admin.site.register(Ingredient, BookAdmin)
+    list_filter = ('user', 'recipe')
 
 
 admin.site.register(Tag, TagAdmin)
-#admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(RecipeIngredient, RecipeIngredientAdmin)
 admin.site.register(FavoriteRecipe, FavoriteRecipeAdmin)
