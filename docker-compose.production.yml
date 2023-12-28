@@ -1,0 +1,41 @@
+version: '3.3'
+
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+
+  db:
+    image: postgres:13
+    restart: on-failure
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+
+  backend:
+    image: ivanhom/foodgram_backend
+    restart: on-failure
+    env_file: .env
+    volumes:
+      - static:/app/static/
+      - media:/app/media/
+    depends_on:
+      - db
+
+  frontend:
+    image: ivanhom/foodgram_frontend
+    volumes:
+      - static:/app/result_build/
+
+  nginx:
+    image: ivanhom/foodgram_gateway
+    ports:
+      - "9000:80"
+    volumes:
+      - static:/var/html/static/
+      - media:/var/html/media/
+    depends_on:
+      - backend
+    restart: always
