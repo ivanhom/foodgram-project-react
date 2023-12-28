@@ -27,7 +27,10 @@ services:
   frontend:
     build: ./frontend/
     volumes:
-      - static:/app/result_build/
+      - static:/app/result_build/build/
+      - static:/app/docs/
+    depends_on:
+      - nginx
 
   nginx:
     build: ./nginx/
