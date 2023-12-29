@@ -22,8 +22,8 @@ from api.serializers import (FavoriteRecipeSerializer, FollowUserSerializer,
                              IngredientSerializer, ShoppingCartSerializer,
                              TagSerializer, UsersSerializer,
                              WriteRecipeSerializer)
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
-                            Tag, User)
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+                            RecipeIngredient, ShoppingCart, Tag, User)
 from users.models import Subscription
 
 
@@ -188,7 +188,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         # Create the PDF object, using the buffer as its "file."
         p = canvas.Canvas(buffer)
 
-        text = ShoppingCart.objects.filter(user=request.user)
+        user = User.objects.get(username='admin')
+        print(user)
+        text = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__user=user
+        ).values('ingredient__name', 'ingredient__measurement_unit')
+        print(text)
+        print(text.__dict__)
 
         # Draw things on the PDF. Here's where the PDF generation happens.
         # See the ReportLab documentation for the full list of functionality.

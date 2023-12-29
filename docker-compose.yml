@@ -35,7 +35,7 @@ services:
   nginx:
     build: ./nginx/
     ports:
-      - "80:80"
+      - "9000:80"
     volumes:
       - static:/var/html/static/
       - media:/var/html/media/
