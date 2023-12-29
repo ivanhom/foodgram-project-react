@@ -1,7 +1,11 @@
+import io
+
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -177,5 +181,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=False)
-    def download_shopping_cart(self, request):
-        return Response({'info': 'PDF'}, status=status.HTTP_200_OK)
+    def download_shopping_cart(self, request):  # Еще не доделал
+        # Create a file-like buffer to receive PDF data.
+        buffer = io.BytesIO()
+
+        # Create the PDF object, using the buffer as its "file."
+        p = canvas.Canvas(buffer)
+
+        text = ShoppingCart.objects.filter(user=request.user)
+
+        # Draw things on the PDF. Here's where the PDF generation happens.
+        # See the ReportLab documentation for the full list of functionality.
+        p.drawString(100, 100, text)
+
+        # Close the PDF object cleanly, and we're done.
+        p.showPage()
+        p.save()
+
+        # FileResponse sets the Content-Disposition header so that browsers
+        # present the option to save the file.
+        buffer.seek(0)
+        return FileResponse(
+            buffer, as_attachment=True, filename="recipe-list.pdf"
+        )
