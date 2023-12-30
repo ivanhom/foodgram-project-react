@@ -1,11 +1,9 @@
-import io
-
+from django.db.models import Sum
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import FileResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -22,6 +20,7 @@ from api.serializers import (FavoriteRecipeSerializer, FollowUserSerializer,
                              IngredientSerializer, ShoppingCartSerializer,
                              TagSerializer, UsersSerializer,
                              WriteRecipeSerializer)
+from api.utils import create_shopping_list
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Tag, User)
 from users.models import Subscription
@@ -181,32 +180,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=False)
-    def download_shopping_cart(self, request):  # Еще не доделал
-        # Create a file-like buffer to receive PDF data.
-        buffer = io.BytesIO()
+    def download_shopping_cart(self, request):
+        user = request.user
+        if not user.shopping_cart.exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        # Create the PDF object, using the buffer as its "file."
-        p = canvas.Canvas(buffer)
+        queryset = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__user=request.user
+        ).values('ingredient__name', 'ingredient__measurement_unit').order_by(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(total_amount=Sum('amount'))
 
-        user = User.objects.get(username='admin')
-        print(user)
-        text = RecipeIngredient.objects.filter(
-            recipe__shopping_cart__user=user
-        ).values('ingredient__name', 'ingredient__measurement_unit')
-        print(text)
-        print(text.__dict__)
+        shopping_list = create_shopping_list(queryset)
 
-        # Draw things on the PDF. Here's where the PDF generation happens.
-        # See the ReportLab documentation for the full list of functionality.
-        p.drawString(100, 100, text)
-
-        # Close the PDF object cleanly, and we're done.
-        p.showPage()
-        p.save()
-
-        # FileResponse sets the Content-Disposition header so that browsers
-        # present the option to save the file.
-        buffer.seek(0)
-        return FileResponse(
-            buffer, as_attachment=True, filename="recipe-list.pdf"
+        response = HttpResponse(shopping_list, content_type=(
+            'text.txt; charset=utf-8')
         )
+        response["Content-Disposition"] = (
+            'attachment; filename="shopping_list"'
+        )
+        return response

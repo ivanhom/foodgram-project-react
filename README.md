@@ -1,13 +1,5 @@
 [![Main Foodgram workflow](https://github.com/ivanhom/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/ivanhom/foodgram-project-react/actions/workflows/main.yml)
 
-
-docker compose up -d && docker compose exec backend python manage.py migrate && docker compose exec backend python manage.py collectstatic --noinput && docker compose exec backend cp -r /app/collected_static/. /app/static/ && docker compose exec backend python manage.py upload_data_from_json && docker compose exec backend python manage.py createsuperuser --username admin --email admin@admin.ru
-
-
-
-
-
-
 # Foodgram
 
 ### О возможностях проекта

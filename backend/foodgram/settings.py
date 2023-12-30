@@ -7,15 +7,9 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY = os.getenv('SECRET_KEY')
-# DEBUG = os.getenv('DEBUG_MODE', 'True')
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(', ')
-
-SECRET_KEY = 'django-insecure-h1!z0yowa)bi0xzigqo&+4olij!jnx@wj#h0_e4kosd@qfp^1p'
-
-DEBUG = False
-
-ALLOWED_HOSTS = ['158.160.23.164', '127.0.0.1', 'localhost', 'tregalex.ddns.net', 'backend']
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG_MODE', 'True')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(', ')
 
 # Application definition
 
@@ -82,6 +76,7 @@ DATABASES = {
     }
 }
 
+# Оставил для отладки
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
