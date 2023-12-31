@@ -39,9 +39,9 @@ sudo docker compose -f docker-compose.production.yml exec backend python manage.
 ```
 
 ### Для ревьювера
-Адрес проекта: https://tregalex.ddns.net <br>
-Адрес админ-панели проекта: https://tregalex.ddns.net/admin <br>
-Адрес API документации проекта: https://tregalex.ddns.net/api/docs <br>
+Адрес проекта: https://tregalex.ddns.net/ <br>
+Адрес админ-панели проекта: https://tregalex.ddns.net/admin/ <br>
+Адрес API документации проекта: https://tregalex.ddns.net/api/docs/ <br>
 
 Username
 ```
