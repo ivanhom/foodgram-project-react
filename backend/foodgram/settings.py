@@ -1,4 +1,5 @@
 import os
+from distutils.util import strtobool
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -7,9 +8,9 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG_MODE', 'True')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(', ')
+SECRET_KEY = os.getenv('SECRET_KEY', 'secret_key')
+DEBUG = bool(strtobool(os.getenv('DEBUG_MODE', 'True')))
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(', ')
 
 # Application definition
 
@@ -134,8 +135,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.MyUser'
 
 USERNAME_REGEX = r'^[\w.@+-]+\Z'    # Допустимые символы для поля username
-TAG_SLUG_REGEX = r'^[-a-zA-Z0-9_]+$'    # Допустимые символы для поля slug Тега
+TAG_COLOR_REGEX = r'^#(?:[0-9a-fA-F]{3}){1,2}$'    # Допустимые символы для поля color Тега
 
+# Диапазон значений количества для отдельного ингредиента
+INGRED_MIN_AMOUNT = 1
+INGRED_MAX_AMOUNT = 10000
+
+# Диапазон значений времени приготовления рецепта
+COOKING_MIN_TIME = 1
+COOKING_MAX_TIME = 600
+
+# Формат и Имя для файла со списком покупок
+SHOPPING_LIST_CONTENT_TYPE = 'text/plain'
+SHOPPING_LIST_FILE_NAME = 'shopping_list'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':

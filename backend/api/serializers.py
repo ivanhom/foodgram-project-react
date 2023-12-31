@@ -1,12 +1,14 @@
 import base64
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from api.messages import (INGRED_NOT_FOUND_ERR, INGRED_REPEAT_ERR,
+from api.messages import (COOKING_TIME_ERR, INGRED_AMOUNT_ERR,
+                          INGRED_NOT_FOUND_ERR, INGRED_REPEAT_ERR,
                           TAG_NOT_FOUND_ERR, TAG_REPEAT_ERR)
 from api.utils import add_ingredients_for_recipe
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
@@ -166,6 +168,7 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def validate(self, data):
+        cooking_time = data.get('cooking_time')
         ingredients = data.get('ingredients')
         tags = data.get('tags')
         if not ingredients:
@@ -175,6 +178,9 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         ingredients_list = []
         tags_list = []
         for i in ingredients:
+            if not (settings.INGRED_MIN_AMOUNT <= i['amount']
+                    < settings.INGRED_MAX_AMOUNT):
+                raise ValidationError(INGRED_AMOUNT_ERR)
             if i['ingredient'] in ingredients_list:
                 raise ValidationError(INGRED_REPEAT_ERR)
             ingredients_list.append(i['ingredient'])
@@ -182,6 +188,9 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
             if i in tags_list:
                 raise ValidationError(TAG_REPEAT_ERR)
             tags_list.append(i)
+        if not (settings.COOKING_MIN_TIME <= cooking_time
+                <= settings.COOKING_MAX_TIME):
+            raise ValidationError(COOKING_TIME_ERR)
         return data
 
     def to_representation(self, instance):

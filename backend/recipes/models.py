@@ -11,19 +11,18 @@ class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название тега', max_length=200, unique=True
     )
-    color = models.CharField(verbose_name='Цвет', max_length=7)
-    slug = models.SlugField(
-        max_length=200,
-        unique=True,
+    color = models.CharField(
+        verbose_name='Цвет',
+        max_length=7,
         validators=(RegexValidator(
-            regex=settings.TAG_SLUG_REGEX,
-            message='Недопустимый символ в slug Тега'
+            regex=settings.TAG_COLOR_REGEX,
+            message='Цвет должен быть в формате Hex'
         ),),
         help_text=(
-            'Обязательное поле. Не более 200 символов. '
-            'Допустимы буквы, цифры и символы: -/_.'
+            'Обязательное поле. Например, #8000ff - это фиолетовый цвет.'
         )
     )
+    slug = models.SlugField(max_length=200, unique=True)
 
     class Meta:
         verbose_name = 'Тег'
@@ -82,7 +81,10 @@ class Recipe(models.Model):
         verbose_name='Время приготовления',
         validators=(MinValueValidator(
             limit_value=1,
-            message='Время приготовления не может быть менее 1 минуты.'),
+            message=(
+                'Время приготовления не может быть '
+                f'менее {settings.COOKING_MIN_TIME} минуты.'
+            )),
         )
     )
     pub_date = models.DateTimeField(
@@ -115,8 +117,11 @@ class RecipeIngredient(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         validators=(MinValueValidator(
-            limit_value=0.5,
-            message='Количество должно быть больше нуля'),
+            limit_value=1,
+            message=(
+                'Количество должно быть '
+                f'не меньше {settings.INGRED_MIN_AMOUNT}'
+            )),
         )
     )
 

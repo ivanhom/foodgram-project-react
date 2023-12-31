@@ -1,4 +1,5 @@
 from django.db.models import Sum
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -193,10 +194,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         shopping_list = create_shopping_list(queryset)
 
-        response = HttpResponse(shopping_list, content_type=(
-            'text.txt; charset=utf-8')
+        response = HttpResponse(
+            shopping_list, content_type=settings.SHOPPING_LIST_CONTENT_TYPE
         )
         response["Content-Disposition"] = (
-            'attachment; filename="shopping_list"'
+            f'attachment; filename={settings.SHOPPING_LIST_FILE_NAME}'
         )
         return response

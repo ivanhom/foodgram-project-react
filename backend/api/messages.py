@@ -1,8 +1,23 @@
+from django.conf import settings
+
 INGRED_REPEAT_ERR = {
     'ingredients': 'Ингредиенты в списке не должны повторяться!'
 }
 INGRED_NOT_FOUND_ERR = {
     'ingredients': 'У рецепта должен быть минимум 1 ингредиент!'
+}
+INGRED_AMOUNT_ERR = {
+    'ingredients': (
+        f'Количество ингредиента должно быть от '
+        f'{settings.INGRED_MIN_AMOUNT} до {settings.INGRED_MAX_AMOUNT}'
+    )
+
+}
+COOKING_TIME_ERR = {
+    'cooking_time': (
+        f'Время приготовления должно быть от '
+        f'{settings.COOKING_MIN_TIME} до {settings.COOKING_MAX_TIME}'
+    )
 }
 
 TAG_REPEAT_ERR = {
