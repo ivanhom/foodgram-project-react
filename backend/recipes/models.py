@@ -1,7 +1,10 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import RegexValidator
 from django.db import models
+
+from api.messages import COOKING_TIME_ERR, INGRED_AMOUNT_ERR
+from recipes.validators import MinMaxValidator
 
 User = get_user_model()
 
@@ -79,13 +82,11 @@ class Recipe(models.Model):
     text = models.TextField(verbose_name='Описание рецепта')
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
-        validators=(MinValueValidator(
-            limit_value=1,
-            message=(
-                'Время приготовления не может быть '
-                f'менее {settings.COOKING_MIN_TIME} минуты.'
-            )),
-        )
+        validators=(MinMaxValidator(
+            min_value=settings.COOKING_MIN_TIME,
+            max_value=settings.COOKING_MAX_TIME,
+            message=COOKING_TIME_ERR
+        ),)
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации рецепта', auto_now_add=True
@@ -116,13 +117,11 @@ class RecipeIngredient(models.Model):
 
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
-        validators=(MinValueValidator(
-            limit_value=1,
-            message=(
-                'Количество должно быть '
-                f'не меньше {settings.INGRED_MIN_AMOUNT}'
-            )),
-        )
+        validators=(MinMaxValidator(
+            min_value=settings.INGRED_MIN_AMOUNT,
+            max_value=settings.INGRED_MAX_AMOUNT,
+            message=INGRED_AMOUNT_ERR
+        ),)
     )
 
     class Meta:

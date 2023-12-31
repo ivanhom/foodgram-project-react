@@ -1,5 +1,4 @@
 import os
-from distutils.util import strtobool
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -9,7 +8,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'secret_key')
-DEBUG = bool(strtobool(os.getenv('DEBUG_MODE', 'True')))
+DEBUG = os.getenv('DEBUG_MODE', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(', ')
 
 # Application definition
@@ -77,14 +76,6 @@ DATABASES = {
     }
 }
 
-# Оставил для отладки
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -145,8 +136,7 @@ INGRED_MAX_AMOUNT = 10000
 COOKING_MIN_TIME = 1
 COOKING_MAX_TIME = 600
 
-# Формат и Имя для файла со списком покупок
-SHOPPING_LIST_CONTENT_TYPE = 'text/plain'
+# Имя для файла со списком покупок
 SHOPPING_LIST_FILE_NAME = 'shopping_list'
 
 REST_FRAMEWORK = {

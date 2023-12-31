@@ -1,6 +1,5 @@
 from django.db.models import Sum
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,8 +11,8 @@ from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.messages import (RECIPE_ALR_ADDED_ERR, RECIPE_NOT_ADDED_ERR,
-                          RECIPE_NOT_FOUND_ERR, SUBSCR_ALR_ERR,
-                          SUBSCR_NOT_FOUND_ERR, SUBSCR_NOT_YOURSELF_ERR)
+                          SUBSCR_ALR_ERR, SUBSCR_NOT_FOUND_ERR,
+                          SUBSCR_NOT_YOURSELF_ERR)
 from api.paginators import LimitPagination
 from api.permissions import (IsAuthorOrAdminOrJustReadingRecipe,
                              IsUserOrAdminOrJustReadingUserdata)
@@ -25,6 +24,8 @@ from api.utils import create_shopping_list
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Tag, User)
 from users.models import Subscription
+
+SHOPPING_LIST_CONTENT_TYPE = 'text/plain'
 
 
 class UsersViewSet(UserViewSet):
@@ -134,14 +135,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def favorite_shopping_cart_handler(self, request, pk, model, serializer):
         user = request.user
+        recipe = get_object_or_404(Recipe, id=pk)
+        object = model.objects.filter(user=user, recipe=recipe)
+
         if request.method == 'POST':
-            try:
-                recipe = Recipe.objects.get(id=pk)
-            except ObjectDoesNotExist:
-                return Response(
-                    RECIPE_NOT_FOUND_ERR, status=status.HTTP_400_BAD_REQUEST
-                )
-            object = model.objects.filter(user=user, recipe=recipe)
             if object.exists():
                 return Response(
                     RECIPE_ALR_ADDED_ERR, status=status.HTTP_400_BAD_REQUEST
@@ -151,8 +148,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
-            recipe = get_object_or_404(Recipe, id=pk)
-            object = model.objects.filter(user=user, recipe=recipe)
             if object.exists():
                 object.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -195,9 +190,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         shopping_list = create_shopping_list(queryset)
 
         response = HttpResponse(
-            shopping_list, content_type=settings.SHOPPING_LIST_CONTENT_TYPE
+            shopping_list, content_type=SHOPPING_LIST_CONTENT_TYPE
         )
-        response["Content-Disposition"] = (
+        response['Content-Disposition'] = (
             f'attachment; filename={settings.SHOPPING_LIST_FILE_NAME}'
         )
         return response

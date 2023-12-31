@@ -179,7 +179,7 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         tags_list = []
         for i in ingredients:
             if not (settings.INGRED_MIN_AMOUNT <= i['amount']
-                    < settings.INGRED_MAX_AMOUNT):
+                    <= settings.INGRED_MAX_AMOUNT):
                 raise ValidationError(INGRED_AMOUNT_ERR)
             if i['ingredient'] in ingredients_list:
                 raise ValidationError(INGRED_REPEAT_ERR)
