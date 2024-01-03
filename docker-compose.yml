@@ -8,7 +8,7 @@ volumes:
 services:
 
   db:
-    image: postgres:13
+    image: postgres:13.0-alpine
     restart: on-failure
     env_file: .env
     volumes:
