@@ -1,5 +1,3 @@
-[![Main Foodgram workflow](https://github.com/ivanhom/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/ivanhom/foodgram-project-react/actions/workflows/main.yml)
-
 # Foodgram
 
 ### О возможностях проекта
